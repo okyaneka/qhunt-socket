@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cookie": "^1.0.2",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "qhunt-lib": "link:../qhunt-lib",
     "socket.io": "^4.8.1"

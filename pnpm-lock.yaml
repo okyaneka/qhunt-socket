@@ -11,6 +11,9 @@ importers:
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
+      qhunt-lib:
+        specifier: link:../qhunt-lib
+        version: link:../qhunt-lib
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1

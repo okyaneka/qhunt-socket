@@ -1,6 +1,6 @@
-import { ExtendedError, Socket } from "socket.io";
+import AuthMiddleware from "./AuthMiddleware";
+import LogMiddleware from "./LogMiddleware";
 
-export type SocketHandler = (
-  socket: Socket,
-  next: (err?: ExtendedError) => void
-) => void;
+export { AuthMiddleware, LogMiddleware };
+
+export default { AuthMiddleware, LogMiddleware };

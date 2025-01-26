@@ -1,0 +1,39 @@
+name: Build and Push Docker
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: DEV
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+          registry: ghcr.io
+
+      - name: Build and push Docker images for multiple architectures
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --build-arg NODE_ENV="${{ env.NODE_ENV }}" \
+            --build-arg PORT="${{ env.PORT }}" \
+            --build-arg MONGO_URI="${{ env.MONGO_URI }}" \
+            --build-arg MONGO_DB_NAME="${{ env.MONGO_DB_NAME }}" \
+            --build-arg APP_URL="${{ env.APP_URL }}" \
+            -t ghcr.io/${{ github.repository_owner }}/qhunt-socket:${{ github.sha }} \
+            --push .

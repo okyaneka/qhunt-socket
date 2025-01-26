@@ -10,7 +10,7 @@ export const create = () =>
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 200;
-    res.end(response.success("QHunt Socket"));
+    res.end(JSON.stringify(response.success("QHunt Socket")));
   });
 
 export const options: Partial<ServerOptions> = {
@@ -18,7 +18,7 @@ export const options: Partial<ServerOptions> = {
     origin: /^http:\/\/localhost:\d+$/,
     credentials: true,
   },
-  path: "/",
+  path: "/socket",
 };
 
 const server = { create, options } as const;

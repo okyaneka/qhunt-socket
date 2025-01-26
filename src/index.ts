@@ -1,30 +1,20 @@
-import { createServer } from "http";
 import { Server } from "socket.io";
 import env from "~/configs/env";
-import LogMiddleware from "./middlewares/LogMiddleware";
+import mongoose from "./plugins/mongoose";
+import sockets from "./sockets";
+import server from "./configs/server";
+import log from "./helpers/log";
+import { socket } from "./helpers";
 
-const httpServer = createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "application/json");
-  res.end(
-    JSON.stringify({
-      code: 200,
-      message: "success",
-      data: "QHunt Socket",
-      error: {},
-    })
-  );
-});
+mongoose();
 
-const io = new Server(httpServer, {
-  /* options */
-});
+const httpServer = server.create();
 
-io.use(LogMiddleware);
+const app = new Server(httpServer, server.options);
 
-io.on("connection", (socket) => {
-  // ...
-});
+app.on("connection", socket.listen());
+
+sockets(app);
 
 httpServer.listen(env.PORT, () => {
   console.log("\n", `Server is running at http://localhost:${env.PORT}`);

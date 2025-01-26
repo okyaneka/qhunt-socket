@@ -1,6 +1,6 @@
 {
   "name": "qhunt-socket",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "src/index.ts",
   "scripts": {
     "start": "node -r ts-node/register -r tsconfig-paths/register dist/index.js",
@@ -12,7 +12,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cookie": "^1.0.2",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
+    "qhunt-lib": "github:okyaneka/qhunt-lib",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {

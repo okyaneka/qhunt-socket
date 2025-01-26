@@ -36,4 +36,5 @@ jobs:
             --build-arg MONGO_DB_NAME="${{ env.MONGO_DB_NAME }}" \
             --build-arg APP_URL="${{ env.APP_URL }}" \
             -t ghcr.io/${{ github.repository_owner }}/qhunt-socket:${{ github.sha }} \
+            -t ghcr.io/${{ github.repository_owner }}/qhunt-socket:latest \
             --push .

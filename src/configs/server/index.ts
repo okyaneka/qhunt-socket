@@ -1,6 +1,7 @@
 import { createServer } from "http";
 import { ServerOptions } from "socket.io";
 import { response } from "qhunt-lib/helpers";
+import env from "../env";
 
 export const create = () =>
   createServer((req, res) => {
@@ -15,7 +16,7 @@ export const create = () =>
 
 export const options: Partial<ServerOptions> = {
   cors: {
-    origin: /^http:\/\/localhost:\d+$/,
+    origin: env.APP_URL,
     credentials: true,
   },
   path: "/socket",

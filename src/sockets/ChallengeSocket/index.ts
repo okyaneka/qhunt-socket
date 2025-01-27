@@ -129,6 +129,7 @@ const ChallengeSocket = socket.listen(async (socket) => {
   };
 
   const setResult = async () => {
+    const challenge = await UserChallengeService.detail(id, TID);
     if (challenge.status == UserChallengeStatus.Completed)
       return socket.emit("setResult", challenge.results, false);
 

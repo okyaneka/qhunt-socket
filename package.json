@@ -15,7 +15,7 @@
     "cookie": "^1.0.2",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
-    "qhunt-lib": "github:okyaneka/qhunt-lib",
+    "qhunt-lib": "link:../qhunt-lib",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {

@@ -1,14 +1,11 @@
 import dayjs from "dayjs";
 import { Trivia } from "qhunt-lib/models/TriviaModel";
-import UserChallengeModel, {
+import {
   UserChallengeResult,
   UserChallengeStatus,
 } from "qhunt-lib/models/UserChallengeModel";
-import UserTriviaModel, {
-  UserTrivia,
-  UserTriviaResult,
-} from "qhunt-lib/models/UserTriviaModel";
-import { ChallengeService, UserChallengeService } from "qhunt-lib/services";
+import { UserTrivia } from "qhunt-lib/models/UserTriviaModel";
+import { UserChallengeService, UserTriviaService } from "qhunt-lib/services";
 import { socket } from "~/helpers";
 import formula from "~/helpers/formula";
 
@@ -41,15 +38,10 @@ const ChallengeSocket = socket.listen(async (socket) => {
 
   const challenge = await UserChallengeService.detail(id, TID);
   const contents = await UserChallengeService.detailContent(id, TID);
-  const contentsOrigin = await ChallengeService.detailContent(
-    challenge.challenge.id
-  );
-
-  const challengeResults = challenge.results ?? initResult();
+  const initResults = challenge.results ?? initResult();
 
   const timerLeft =
-    challenge.settings.duration -
-    dayjs().diff(challengeResults.startAt, "second");
+    challenge.settings.duration - dayjs().diff(initResults.startAt, "second");
 
   const session: TriviaSession = {
     current: 0,
@@ -61,12 +53,7 @@ const ChallengeSocket = socket.listen(async (socket) => {
   };
 
   const saveState = async () => {
-    const challenge = await UserChallengeService.detail(id, TID);
-    if (challenge.status !== UserChallengeStatus.Completed)
-      await UserChallengeModel.updateOne(
-        { _id: challenge.id },
-        { results: challengeResults, status: UserChallengeStatus.OnGoing }
-      );
+    UserChallengeService.submitState(id, TID);
   };
 
   /**
@@ -80,52 +67,43 @@ const ChallengeSocket = socket.listen(async (socket) => {
    */
 
   const setAnswer = async (value?: string) => {
-    const { trivia, triviaOrigin, questionSentAt } = session;
-    if (!triviaOrigin || !trivia)
-      return socket.emit("error", "Trivia not found");
-    const answer = triviaOrigin?.options.find(({ text }) => text == value);
-    if (!answer) return socket.emit("error", "Answer not found");
+    const { trivia, questionSentAt } = session;
+    if (!trivia) return socket.emit("error", "trivia not found");
     const bonus = formula.triviaBonus(
       dayjs(questionSentAt).diff(dayjs(), "second")
     );
-
-    const results: UserTriviaResult = {
-      baseScore: answer.point,
-      feedback:
-        triviaOrigin.feedback[answer.isCorrect ? "positive" : "negative"],
-      isCorrect: answer.isCorrect,
-      totalScore: answer.point + (answer.isCorrect ? bonus : 0),
-      bonus,
-      answer: value,
-    };
-
-    await UserTriviaModel.updateOne({ _id: trivia.id }, { results });
-
-    setScore(results.baseScore);
-    if (value != undefined) setFeedback(results.feedback);
+    const { results } = await UserTriviaService.submit(
+      trivia.id,
+      TID,
+      value,
+      bonus
+    );
+    setScore();
+    setFeedback(results?.feedback);
     session.current++;
-    if (session.current < contents.length) setQuestion();
-    else setResult();
+    setQuestion();
   };
 
   const setQuestion = () => {
-    const trivia = contents[session.current];
-    if (trivia?.results) {
-      ++session.current == contentsOrigin.length ? setResult() : setQuestion();
+    if (session.current === contents.length) {
+      setResult();
       return;
     }
 
+    const trivia = contents[session.current];
+    if (trivia?.results) {
+      session.current++;
+      return setQuestion();
+    }
+
     session.trivia = trivia;
-    session.triviaOrigin =
-      contentsOrigin.find((item) => item.id == session.trivia?.trivia.id) ||
-      null;
     session.questionSentAt = new Date();
     setProgress();
     socket.emit("setQuestion", session.trivia);
   };
 
-  const setFeedback = (value: string) => {
-    socket.emit("setFeedback", value);
+  const setFeedback = (value?: string) => {
+    if (value) socket.emit("setFeedback", value);
   };
 
   const setResult = async () => {
@@ -138,76 +116,20 @@ const ChallengeSocket = socket.listen(async (socket) => {
       session.interval = null;
     }
 
-    const contents = await UserChallengeService.detailContent(id, TID);
-    await Promise.all(
-      contents
-        .filter((item) => item.results == null)
-        .map(async (item) => {
-          const triviaOrigin = contentsOrigin.find(
-            (item) => item.id == session.trivia?.trivia.id
-          );
-          if (!triviaOrigin) return;
-          const results: UserTriviaResult = {
-            baseScore: 0,
-            feedback: triviaOrigin?.feedback.negative,
-            isCorrect: false,
-            totalScore: 0,
-            bonus: 0,
-            answer: undefined,
-          };
-
-          return await UserTriviaModel.updateOne({ _id: item.id }, { results });
-        })
-    );
-    const { baseScore } = challengeResults;
-
-    const { correctBonus, correctCount } = contents.reduce(
-      (acc, item) => {
-        acc.correctCount += item.results?.isCorrect ? 1 : 0;
-        acc.correctBonus += item.results?.bonus || 0;
-        return acc;
-      },
-      {
-        correctBonus: 0,
-        correctCount: 0,
-      }
+    const timeUsed = dayjs().diff(dayjs(initResults.startAt), "seconds");
+    const bonus = formula.timeBonus(
+      timeUsed,
+      Math.max(challenge.settings.duration, 0),
+      (contents.length * 100) / 2
     );
 
-    const timeUsed = dayjs().diff(dayjs(challengeResults.startAt), "seconds");
-    const bonus = formula.timeBonus(timeUsed, challenge.settings.duration, 500);
-    const totalScore = baseScore + bonus + correctBonus;
-
-    challengeResults.bonus = bonus;
-    challengeResults.timeUsed = timeUsed;
-    challengeResults.correctBonus = correctBonus;
-    challengeResults.correctCount = correctCount;
-    challengeResults.totalScore = totalScore;
-    challengeResults.endAt = new Date();
-
-    await UserChallengeModel.updateOne(
-      { _id: challenge.id },
-      { results: challengeResults, status: UserChallengeStatus.Completed }
-    );
-
-    socket.emit("setResult", challengeResults, true);
+    const { results } = await UserChallengeService.submit(id, TID, bonus);
+    socket.emit("setResult", results, true);
   };
 
-  const setScore = async (value: number = 0) => {
-    challengeResults.baseScore += value;
-    if (value != undefined) {
-    } else {
-      const contents = await UserChallengeService.detailContent(id, TID);
-      const baseScore = contents.reduce(
-        (acc, item) => acc + (item.results?.baseScore ?? 0),
-        0
-      );
-      challengeResults.baseScore = baseScore;
-    }
-    await UserChallengeModel.updateOne(
-      { _id: challenge.id },
-      { results: challengeResults }
-    );
-    socket.emit("setScore", challengeResults.baseScore);
+  const setScore = async () => {
+    const { results } = await UserChallengeService.submitState(id, TID);
+    socket.emit("setScore", results?.baseScore || 0);
   };
 
   const setTimer = () => {

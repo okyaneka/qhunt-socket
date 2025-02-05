@@ -10,7 +10,7 @@ const env = {
 
   JWT_SECRET: process.env.JWT_SECRET || "",
 
-  APP_URL: process.env.APP_URL || /^https?:\/\/localhost:\d+$/,
+  APP_URL: process.env.APP_URL || "",
 } as const;
 
 export default env;

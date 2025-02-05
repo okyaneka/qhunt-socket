@@ -3,6 +3,9 @@ import { ServerOptions } from "socket.io";
 import { response } from "qhunt-lib/helpers";
 import env from "../env";
 
+const origins = env.APP_URL.split(",").filter((origin) => origin.trim());
+const local = /^https?:\/\/localhost:\d+$/;
+
 export const create = () =>
   createServer((req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -16,7 +19,12 @@ export const create = () =>
 
 export const options: Partial<ServerOptions> = {
   cors: {
-    origin: env.APP_URL,
+    origin: (origin, callback) => {
+      if (!origin || origins.includes(origin) || local.test(origin))
+        return callback(null, true);
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   },
   path: "/socket",

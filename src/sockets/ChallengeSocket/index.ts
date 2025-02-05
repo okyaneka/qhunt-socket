@@ -34,7 +34,10 @@ const initResult = (): UserChallengeResult => {
 const ChallengeSocket = socket.listen(async (socket) => {
   const id = socket.handshake.query.id as string;
   const TID = socket.auth?.code;
-  if (!id || !TID) return socket.disconnect(true);
+  if (!id || !TID) {
+    socket.disconnect(true);
+    return;
+  }
 
   const challenge = await UserChallengeService.detail(id, TID);
   const contents = await UserTriviaService.details(challenge.contents, TID);

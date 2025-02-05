@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
-import { Trivia } from "qhunt-lib/models/TriviaModel";
 import {
+  UserTrivia,
+  Trivia,
   UserChallengeResult,
-  UserChallengeStatus,
-} from "qhunt-lib/models/UserChallengeModel";
-import { UserTrivia } from "qhunt-lib/models/UserTriviaModel";
+  USER_CHALLENGE_STATUS,
+} from "qhunt-lib";
 import { UserChallengeService, UserTriviaService } from "qhunt-lib/services";
 import { socket } from "~/helpers";
 import formula from "~/helpers/formula";
@@ -24,8 +24,8 @@ const initResult = (): UserChallengeResult => {
     bonus: 0,
     timeUsed: 0,
     totalScore: 0,
-    correctBonus: 0,
-    correctCount: 0,
+    contentBonus: 0,
+    totalCorrect: 0,
     startAt: new Date(),
     endAt: null,
   };
@@ -37,7 +37,7 @@ const ChallengeSocket = socket.listen(async (socket) => {
   if (!id || !TID) return socket.disconnect(true);
 
   const challenge = await UserChallengeService.detail(id, TID);
-  const contents = await UserChallengeService.detailContent(id, TID);
+  const contents = await UserTriviaService.details(challenge.contents, TID);
   const initResults = challenge.results ?? initResult();
 
   const timerLeft =
@@ -79,7 +79,7 @@ const ChallengeSocket = socket.listen(async (socket) => {
       bonus
     );
     setScore();
-    setFeedback(results?.feedback);
+    if (results?.feedback) setFeedback(results.feedback);
     session.current++;
     setQuestion();
   };
@@ -102,13 +102,13 @@ const ChallengeSocket = socket.listen(async (socket) => {
     socket.emit("setQuestion", session.trivia);
   };
 
-  const setFeedback = (value?: string) => {
+  const setFeedback = (value: string) => {
     if (value) socket.emit("setFeedback", value);
   };
 
   const setResult = async () => {
     const challenge = await UserChallengeService.detail(id, TID);
-    if (challenge.status == UserChallengeStatus.Completed)
+    if (challenge.status == USER_CHALLENGE_STATUS.Completed)
       return socket.emit("setResult", challenge.results, false);
 
     if (session.interval) {
@@ -161,7 +161,7 @@ const ChallengeSocket = socket.listen(async (socket) => {
     saveState();
   });
 
-  if (challenge.status == UserChallengeStatus.Completed) {
+  if (challenge.status == USER_CHALLENGE_STATUS.Completed) {
     setResult();
   } else {
     await saveState();

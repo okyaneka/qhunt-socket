@@ -1,7 +1,7 @@
 import { UserPublicService } from "qhunt-lib/services";
 import { log, SocketHandler } from "~/helpers";
 import { parse } from "cookie";
-import { UserPublicForeignValidator } from "qhunt-lib/validators/UserPublicValidator";
+import { UserPublicForeignValidator } from "qhunt-lib/validators/user-public";
 
 const AuthMiddleware: SocketHandler = async (socket, next) => {
   const {

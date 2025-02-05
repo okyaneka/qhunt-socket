@@ -2,7 +2,7 @@ import log from "../log";
 import { ConnectionHandler } from "../types";
 
 const listen = (ops?: ConnectionHandler): ConnectionHandler => {
-  return (socket) => {
+  return async (socket) => {
     log.info(socket, "connect");
 
     socket.onAny((event, ...args) => {
@@ -25,7 +25,13 @@ const listen = (ops?: ConnectionHandler): ConnectionHandler => {
       socket.emit("pong");
     });
 
-    ops && ops(socket);
+    if (ops !== undefined)
+      ops(socket).catch((err) => {
+        log.error(socket, err.message);
+        socket.emit("error", err.message);
+        socket.disconnect();
+      });
+    // ops && ops(socket);
   };
 };
 

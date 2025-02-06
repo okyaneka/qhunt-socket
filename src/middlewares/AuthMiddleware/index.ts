@@ -15,8 +15,6 @@ const AuthMiddleware: SocketHandler = async (socket, next) => {
     return next(new Error(message));
   }
 
-  console.log(parse(cookieString));
-
   const { TID_SOCKET: TID } = parse(cookieString) as { TID_SOCKET: string };
   const user = await UserPublicService.verify(TID).catch((err: Error) => err);
 

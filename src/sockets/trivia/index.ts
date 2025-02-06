@@ -4,6 +4,7 @@ import {
   Trivia,
   UserChallengeResult,
   USER_CHALLENGE_STATUS,
+  CHALLENGE_TYPES,
 } from "qhunt-lib";
 import { UserChallengeService, UserTriviaService } from "qhunt-lib/services";
 import { socket } from "~/helpers";
@@ -31,15 +32,15 @@ const initResult = (): UserChallengeResult => {
   };
 };
 
-const ChallengeSocket = socket.listen(async (socket) => {
+const TriviaSocket = socket.listen(async (socket) => {
   const id = socket.handshake.query.id as string;
   const TID = socket.auth?.code;
-  if (!id || !TID) {
-    socket.disconnect(true);
-    return;
-  }
+  if (!id || !TID) throw new Error("invalid auth");
 
   const challenge = await UserChallengeService.detail(id, TID);
+  if (challenge.settings.type !== CHALLENGE_TYPES.Trivia)
+    throw new Error("challenge type is not trivia");
+
   const contents = await UserTriviaService.details(challenge.contents, TID);
   const initResults = challenge.results ?? initResult();
 
@@ -174,4 +175,4 @@ const ChallengeSocket = socket.listen(async (socket) => {
   }
 });
 
-export default ChallengeSocket;
+export default TriviaSocket;

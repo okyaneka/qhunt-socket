@@ -7,7 +7,8 @@ import {
   CHALLENGE_TYPES,
 } from "qhunt-lib";
 import { UserChallengeService, UserTriviaService } from "qhunt-lib/services";
-import { socket } from "~/helpers";
+import { event, socket } from "~/helpers";
+import { EVENTS } from "~/helpers/event";
 import formula from "~/helpers/formula";
 
 interface TriviaSession {
@@ -34,8 +35,10 @@ const initResult = (): UserChallengeResult => {
 
 const TriviaSocket = socket.listen(async (socket) => {
   const id = socket.handshake.query.id as string;
+  if (!id) throw new Error("invalid id");
+
   const TID = socket.auth?.code;
-  if (!id || !TID) throw new Error("invalid auth");
+  if (!TID) throw new Error("invalid auth");
 
   const challenge = await UserChallengeService.detail(id, TID);
   if (challenge.settings.type !== CHALLENGE_TYPES.Trivia)
@@ -127,7 +130,12 @@ const TriviaSocket = socket.listen(async (socket) => {
       (contents.length * 100) / 2
     );
 
-    const { results } = await UserChallengeService.submit(id, TID, bonus);
+    const { userStage, results } = await UserChallengeService.submit(
+      id,
+      TID,
+      bonus
+    );
+    if (userStage) event.emit(EVENTS.ScoreChanged, userStage.stageId);
     socket.emit("setResult", results, true);
   };
 

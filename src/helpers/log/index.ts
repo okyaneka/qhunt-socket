@@ -21,7 +21,7 @@ export const write = (
   const logMessage = `[${timestamp}] ${type} ${message}`.trim();
 
   fs.appendFile(logPath, logMessage + "\n", (err) => {
-    if (err) console.error("Failed to write log to file", err);
+    if (err) console.error("Failed to write log to file", err, err.stack);
   });
 
   console.log(logMessage);
@@ -39,10 +39,12 @@ export const debug = (socket: Socket, message: string = "") => {
   return write("DEBUG", `[${id}] ${namespace}:${message}`.trim());
 };
 
-export const error = (socket: Socket, message: string = "") => {
+export const error = (socket: Socket, error: Error) => {
   const namespace = socket.nsp.name;
   const id = socket.id;
-  return write("ERROR", `[${id}] ${namespace}:${message}`.trim());
+
+  write("ERROR", `[${id}] ${namespace}:${error.message}`.trim());
+  console.log(error.stack);
 };
 
 const log = { info, debug, error } as const;

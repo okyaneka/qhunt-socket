@@ -1,9 +1,9 @@
 import { Server } from "socket.io";
-import ChallengeSocket from "./ChallengeSocket";
 import { AuthMiddleware } from "~/middlewares";
+import TriviaSocket from "./trivia";
 
 const sockets = (app: Server) => {
-  app.of("/challenge").use(AuthMiddleware).on("connection", ChallengeSocket);
+  app.of("/trivia").use(AuthMiddleware).on("connection", TriviaSocket);
 };
 
 export default sockets;

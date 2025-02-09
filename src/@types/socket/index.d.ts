@@ -1,4 +1,4 @@
-import { UserPublicForeign } from "qhunt-lib/models/UserPublicModel";
+import { UserPublicForeign } from "qhunt-lib";
 import { Socket } from "socket.io";
 
 declare module "socket.io" {

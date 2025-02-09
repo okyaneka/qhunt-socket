@@ -4,8 +4,10 @@ import sockets from "./sockets";
 import server from "./configs/server";
 import { socket } from "./helpers";
 import env from "./configs/env";
+import redis from "./plugins/redis";
 
 mongoose();
+redis();
 
 const httpServer = server.create();
 

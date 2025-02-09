@@ -10,16 +10,16 @@ const AuthMiddleware: SocketHandler = async (socket, next) => {
     },
   } = socket;
   if (!cookieString) {
-    const message = "invalid credentials";
-    log.error(socket, message);
-    return next(new Error(message));
+    const error = new Error("invalid credentials");
+    log.error(socket, error);
+    return next(error);
   }
 
   const { TID_SOCKET: TID } = parse(cookieString) as { TID_SOCKET: string };
   const user = await UserPublicService.verify(TID).catch((err: Error) => err);
 
   if (user instanceof Error) {
-    log.error(socket, user.message);
+    log.error(socket, user);
     return next(new Error(user.message));
   }
 
@@ -27,7 +27,7 @@ const AuthMiddleware: SocketHandler = async (socket, next) => {
     stripUnknown: true,
   });
   if (error) {
-    log.error(socket, error.message);
+    log.error(socket, error);
     return next(new Error(error.message));
   }
   socket.auth = value;

@@ -26,7 +26,7 @@ const listen = (ops?: ConnectionHandler): ConnectionHandler => {
     });
 
     if (ops !== undefined)
-      ops(socket).catch((err) => {
+      ops(socket).catch((err: Error) => {
         log.error(socket, err);
         socket.emit("error", err.message);
         socket.disconnect();

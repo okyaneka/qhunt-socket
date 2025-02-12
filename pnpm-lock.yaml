@@ -22,7 +22,7 @@ importers:
         version: 5.4.2
       qhunt-lib:
         specifier: github:okyaneka/qhunt-lib
-        version: https://codeload.github.com/okyaneka/qhunt-lib/tar.gz/f2c91826d75fec68e4698652b519cc4df24683ad
+        version: https://codeload.github.com/okyaneka/qhunt-lib/tar.gz/6ff7ca839a64252bdc9d05655243ba3351402a7d
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1
@@ -68,8 +68,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@mongodb-js/saslprep@1.1.9':
-    resolution: {integrity: sha512-tVkljjeEaAhCqTzajSdgbQ6gE6f3oneVwa3iXR6csiEwXXOFsiC6Uh9iAjAhXPtqa/XMDHWjjeNH/77m/Yq2dw==}
+  '@mongodb-js/saslprep@1.2.0':
+    resolution: {integrity: sha512-+ywrb0AqkfaYuhHs6LxKWgqbh3I72EpEgESCw37o+9qPx9WTCkgDm2B+eMrwehGtHBWHFU4GXvnSCNiFhhausg==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -481,9 +481,9 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qhunt-lib@https://codeload.github.com/okyaneka/qhunt-lib/tar.gz/f2c91826d75fec68e4698652b519cc4df24683ad:
-    resolution: {tarball: https://codeload.github.com/okyaneka/qhunt-lib/tar.gz/f2c91826d75fec68e4698652b519cc4df24683ad}
-    version: 0.0.9
+  qhunt-lib@https://codeload.github.com/okyaneka/qhunt-lib/tar.gz/6ff7ca839a64252bdc9d05655243ba3351402a7d:
+    resolution: {tarball: https://codeload.github.com/okyaneka/qhunt-lib/tar.gz/6ff7ca839a64252bdc9d05655243ba3351402a7d}
+    version: 0.0.10
 
   queue-lit@1.5.2:
     resolution: {integrity: sha512-tLc36IOPeMAubu8BkW8YDBV+WyIgKlYU7zUNs0J5Vk9skSZ4JfGlPOqplP0aHdfv7HL0B2Pg6nwiq60Qc6M2Hw==}
@@ -615,8 +615,8 @@ packages:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
     engines: {node: '>=12'}
 
-  whatwg-url@14.1.0:
-    resolution: {integrity: sha512-jlf/foYIKywAt3x/XWKZ/3rz8OSJPiWktjmk891alJUEjiVxKX9LEO92qH3hv4aJ0mN3MWPvGMCy8jQi95xK4w==}
+  whatwg-url@14.1.1:
+    resolution: {integrity: sha512-mDGf9diDad/giZ/Sm9Xi2YcyzaFpbdLpJPr+E9fSkyQ7KpQD4SdFcugkRQYzhmfI4KeV4Qpnn2sKPdo+kmsgRQ==}
     engines: {node: '>=18'}
 
   ws@8.17.1:
@@ -658,7 +658,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@mongodb-js/saslprep@1.1.9':
+  '@mongodb-js/saslprep@1.2.0':
     dependencies:
       sparse-bitfield: 3.0.3
 
@@ -981,11 +981,11 @@ snapshots:
   mongodb-connection-string-url@3.0.2:
     dependencies:
       '@types/whatwg-url': 11.0.5
-      whatwg-url: 14.1.0
+      whatwg-url: 14.1.1
 
   mongodb@6.13.0:
     dependencies:
-      '@mongodb-js/saslprep': 1.1.9
+      '@mongodb-js/saslprep': 1.2.0
       bson: 6.10.2
       mongodb-connection-string-url: 3.0.2
 
@@ -1051,7 +1051,7 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qhunt-lib@https://codeload.github.com/okyaneka/qhunt-lib/tar.gz/f2c91826d75fec68e4698652b519cc4df24683ad:
+  qhunt-lib@https://codeload.github.com/okyaneka/qhunt-lib/tar.gz/6ff7ca839a64252bdc9d05655243ba3351402a7d:
     dependencies:
       '@zxing/browser': 0.1.5(@zxing/library@0.21.3)
       '@zxing/library': 0.21.3
@@ -1203,7 +1203,7 @@ snapshots:
 
   webidl-conversions@7.0.0: {}
 
-  whatwg-url@14.1.0:
+  whatwg-url@14.1.1:
     dependencies:
       tr46: 5.0.0
       webidl-conversions: 7.0.0

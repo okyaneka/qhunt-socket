@@ -24,7 +24,9 @@ const LeaderboardSocket = socket.listen(async (socket) => {
       auth.code,
       mode === "ranks" ? 100 : undefined,
     ] as const;
-    const data = await LeaderboardService.stage(...args).catch((err) => err);
+    const data = await LeaderboardService.stage(...args).catch(
+      (err: Error) => err
+    );
     if (data instanceof Error) {
       log.error(socket, data);
       return socket.emit("error", data.message);

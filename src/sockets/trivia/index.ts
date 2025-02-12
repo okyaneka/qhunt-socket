@@ -41,6 +41,9 @@ const TriviaSocket = socket.listen(async (socket) => {
   if (!TID) throw new Error("invalid auth");
 
   const challenge = await UserChallengeService.detail(id, TID);
+  if (challenge.status === USER_CHALLENGE_STATUS.Undiscovered)
+    throw new Error("challenge undiscovered");
+
   if (challenge.settings.type !== CHALLENGE_TYPES.Trivia)
     throw new Error("challenge type is not trivia");
 

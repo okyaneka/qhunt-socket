@@ -80,8 +80,13 @@ class PhotohuntSocket extends SocketManager {
       const action =
         state === "detail"
           ? UserChallengeService.detail
-          : UserChallengeService.submitState;
-      const challenge = await action(this.id, this.TID, state === "finish");
+          : UserChallengeService.submit;
+      const challenge = await action(
+        this.id,
+        this.TID,
+        undefined,
+        state === "finish"
+      );
 
       if (!VALID_STATUS.includes(challenge.status))
         throw new Error(`challenge status must in ${VALID_STATUS.join(", ")}`);

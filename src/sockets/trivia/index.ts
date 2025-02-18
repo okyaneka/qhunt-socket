@@ -63,7 +63,7 @@ const TriviaSocket = socket.listen(async (socket) => {
   };
 
   const saveState = async () => {
-    UserChallengeService.submitState(id, TID);
+    UserChallengeService.submit(id, TID);
   };
 
   /**
@@ -126,13 +126,18 @@ const TriviaSocket = socket.listen(async (socket) => {
       session.interval = null;
     }
 
-    const { userStage, results } = await UserChallengeService.submit(id, TID);
+    const { userStage, results } = await UserChallengeService.submit(
+      id,
+      TID,
+      undefined,
+      true
+    );
     if (userStage) event.emit(EVENTS.ScoreChanged, userStage.stageId);
     socket.emit("setResult", results, true);
   };
 
   const setScore = async () => {
-    const { results } = await UserChallengeService.submitState(id, TID);
+    const { results } = await UserChallengeService.submit(id, TID);
     socket.emit("setScore", results?.baseScore || 0);
   };
 

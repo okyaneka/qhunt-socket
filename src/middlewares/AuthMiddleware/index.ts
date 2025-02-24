@@ -1,7 +1,6 @@
 import { UserPublicService } from "qhunt-lib/services";
 import { log, SocketHandler } from "~/helpers";
 import { parse } from "cookie";
-import { UserPublicForeignValidator } from "qhunt-lib/validators/user-public";
 
 const AuthMiddleware: SocketHandler = async (socket, next) => {
   const {
@@ -23,14 +22,11 @@ const AuthMiddleware: SocketHandler = async (socket, next) => {
     return next(new Error(user.message));
   }
 
-  const { value, error } = UserPublicForeignValidator.validate(user, {
-    stripUnknown: true,
-  });
-  if (error) {
-    log.error(socket, error);
-    return next(new Error(error.message));
-  }
-  socket.auth = value;
+  socket.auth = {
+    id: user.id,
+    code: user.code,
+    name: user.name,
+  };
 
   next();
 };

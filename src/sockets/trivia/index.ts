@@ -27,7 +27,7 @@ const initResult = (): UserChallengeResult => {
     timeUsed: 0,
     totalScore: 0,
     contentBonus: 0,
-    totalCorrect: 0,
+    totalItem: 0,
     startAt: new Date(),
     endAt: null,
   };
@@ -63,7 +63,7 @@ const TriviaSocket = socket.listen(async (socket) => {
   };
 
   const saveState = async () => {
-    UserChallengeService.submitState(id, TID);
+    UserChallengeService.submit(id, TID);
   };
 
   /**
@@ -126,24 +126,18 @@ const TriviaSocket = socket.listen(async (socket) => {
       session.interval = null;
     }
 
-    const timeUsed = dayjs().diff(dayjs(initResults.startAt), "seconds");
-    const bonus = formula.timeBonus(
-      timeUsed,
-      Math.max(challenge.settings.duration, 0),
-      (contents.length * 100) / 2
-    );
-
     const { userStage, results } = await UserChallengeService.submit(
       id,
       TID,
-      bonus
+      undefined,
+      true
     );
     if (userStage) event.emit(EVENTS.ScoreChanged, userStage.stageId);
     socket.emit("setResult", results, true);
   };
 
   const setScore = async () => {
-    const { results } = await UserChallengeService.submitState(id, TID);
+    const { results } = await UserChallengeService.submit(id, TID);
     socket.emit("setScore", results?.baseScore || 0);
   };
 

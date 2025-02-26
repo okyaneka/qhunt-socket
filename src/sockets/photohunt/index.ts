@@ -1,15 +1,8 @@
 import dayjs from "dayjs";
-import {
-  CHALLENGE_TYPES,
-  USER_CHALLENGE_STATUS,
-  UserChallenge,
-  UserChallengeResult,
-  UserPhotoHunt,
-} from "qhunt-lib";
+import { UserChallenge, UserPhotoHunt } from "qhunt-lib";
+import { CHALLENGE_TYPES, USER_CHALLENGE_STATUS } from "qhunt-lib/constants";
 import { UserChallengeService, UserPhotoHuntService } from "qhunt-lib/services";
 import { Socket } from "socket.io";
-import { event, formula, log, socket } from "~/helpers";
-import { EVENTS } from "~/helpers/event";
 import { SocketManager } from "~/helpers/socket";
 
 interface CheckResponse {

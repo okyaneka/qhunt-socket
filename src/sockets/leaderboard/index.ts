@@ -1,6 +1,5 @@
-import { UserPublic } from "qhunt-lib";
 import { LeaderboardService } from "qhunt-lib/services";
-import { event, log, socket } from "~/helpers";
+import { log, socket } from "~/helpers";
 import { EVENTS } from "~/helpers/event";
 import redis from "~/plugins/redis";
 
@@ -35,15 +34,19 @@ const LeaderboardSocket = socket.listen(async (socket) => {
    * 1. set data
    */
 
-  event.on(EVENTS.ScoreChanged, setRanks);
-
-  const listen = await redis().sub<UserPublic>("update-user", (value) => {
-    setRanks();
-  });
+  const listens = await Promise.all([
+    redis.sub("update-user", () => {
+      console.log("p");
+      setRanks();
+    }),
+    redis.sub<string>("leaderboard", (value) => {
+      console.log(stageId, value);
+      stageId === value && setRanks();
+    }),
+  ]);
 
   socket.on("disconnect", () => {
-    event.removeListener(EVENTS.ScoreChanged, setRanks);
-    listen();
+    listens.forEach((listen) => listen && listen());
   });
 
   setRanks();

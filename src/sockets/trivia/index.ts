@@ -1,14 +1,8 @@
 import dayjs from "dayjs";
-import {
-  UserTrivia,
-  Trivia,
-  UserChallengeResult,
-  USER_CHALLENGE_STATUS,
-  CHALLENGE_TYPES,
-} from "qhunt-lib";
+import { UserTrivia, Trivia, UserChallengeResult } from "qhunt-lib";
+import { CHALLENGE_TYPES, USER_CHALLENGE_STATUS } from "qhunt-lib/constants";
 import { UserChallengeService, UserTriviaService } from "qhunt-lib/services";
-import { event, socket } from "~/helpers";
-import { EVENTS } from "~/helpers/event";
+import { socket } from "~/helpers";
 import formula from "~/helpers/formula";
 
 interface TriviaSession {
@@ -132,7 +126,6 @@ const TriviaSocket = socket.listen(async (socket) => {
       undefined,
       true
     );
-    if (userStage) event.emit(EVENTS.ScoreChanged, userStage.stageId);
     socket.emit("setResult", results, true);
   };
 

@@ -1,4 +1,4 @@
-import { mongoose as db } from "qhunt-lib";
+import { mongoose as db } from "qhunt-lib/plugins";
 import { env } from "~/configs";
 
 const mongoose = async () => {

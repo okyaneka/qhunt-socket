@@ -1,5 +1,5 @@
 import { env } from "~/configs";
-import RedisHelper, { RedisOptions } from "qhunt-lib/plugins/redis";
+import { redis, RedisOptions } from "qhunt-lib/plugins/redis";
 
 const options: RedisOptions = {
   host: env.REDIS_HOST,
@@ -8,11 +8,6 @@ const options: RedisOptions = {
   retryStrategy: (times) => Math.min(times * 50, 2000),
 };
 
-let instance: RedisHelper;
-
-const redis = () => {
-  if (!instance) instance = new RedisHelper(options);
-  return instance;
-};
+redis.init(options);
 
 export default redis;
